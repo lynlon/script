@@ -1,0 +1,32 @@
+- name: copy package
+  copy: src=default/etc dest=/
+  tags: cppkg
+ 
+- name: tar nginx
+  shell: /bin/chmod 600 /etc/rsyncd/.rsyncd.passwd
+ 
+- name: yum install
+  yum: name={{ item }} state=latest
+  with_items:
+    - rsync
+    - xinetd
+
+ 
+- name: create developer group
+  shell: /usr/bin/getent group developer || groupadd -g 1003 developer
+ 
+- name: create sperm user
+  shell: /usr/bin/getent passwd sperm || useradd -u1499 sperm -s /sbin/nologin
+ 
+- name: rsync init
+  shell: /bin/sed -i '/rsync/s/873/9507/' /etc/services;sed -i '/disable/s/yes/no/' /etc/xinetd.d/rsync;/sbin/chkconfig xinetd on
+  
+- name: setting iptables port
+  shell: /bin/sed -i '/multiport/s/10050/10050,9507/' /etc/sysconfig/iptables
+ 
+- name: start xinetd service
+  service: name=xinetd state=started enabled=true
+
+- name: start iptables service
+  service: name=iptables state=restarted enabled=true
+

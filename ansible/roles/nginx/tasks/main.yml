@@ -1,0 +1,25 @@
+- name: copy package
+  copy: src=nginx-1.13.6.tar.gz dest=/usr/local/src/nginx-1.13.6.tar.gz
+  tags: cppkg
+ 
+- name: tar nginx
+  shell: cd /usr/local/src;tar -xf nginx-1.13.6.tar.gz
+ 
+- name: yum install
+  yum: name={{ item }} state=latest
+  with_items:
+    - openssl-devel
+    - pcre-devel
+    - gcc
+ 
+- name: install nginx
+  shell: useradd nginx;cd /usr/local/src/nginx-1.13.6;./configure --prefix=/usr/local/nginx --user=nginx --group=nginx --with-http_ssl_module --with-http_flv_module --with-http_stub_status_module --with-http_gzip_static_module  --with-pcre;make && make install
+ 
+- name: copy conf file
+  template: src=nginx.conf dest=/usr/local/nginx/conf/nginx.conf
+ 
+- name: systemctl init
+  template: src=nginx.service dest=/usr/lib/systemd/system/nginx.service
+ 
+- name: start nginx service
+  service: name=nginx state=started enabled=true

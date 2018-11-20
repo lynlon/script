@@ -1,0 +1,3 @@
+nginxport: "8080"
+server_name: "web.wsl.com"
+root_dir: "/web"
