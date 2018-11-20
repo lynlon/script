@@ -1,5 +1,5 @@
 - name: copy package
-  copy: src=default/etc dest=/
+  copy: src=rsync/etc dest=/
   tags: cppkg
  
 - name: tar nginx
@@ -28,5 +28,5 @@
   service: name=xinetd state=started enabled=true
 
 - name: start iptables service
-  service: name=iptables state=restarted enabled=true
+  service: name=iptables state=reloaded enabled=true
 
